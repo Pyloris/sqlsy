@@ -1,4 +1,9 @@
 # sqlsy
+### Install
+```bash
+pip install sqlsy
+```
+
 A python module to easy filling in dummy data insde mysql databases.
 
 ```python
