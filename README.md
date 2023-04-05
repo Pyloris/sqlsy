@@ -14,8 +14,10 @@ config = {
 }
 
 # define the schema of the table to fill
+
+# hook specifies what data to generate
 schema = {
-  'id':Int('id', hook='random_int', args=[0,100]),        #hook specifies the type of data to generate
+  'id':Int('id', hook='seq_choice', args=[0,100]),     # generates numbers 0 - 100 inclu
   'name':VarChar('name', hook='name'),        # here generate fake names
   'job':VarChar('job', hook='job')           # here generate fake jobs
 }
@@ -25,7 +27,8 @@ schema = {
 engine = Engine(config)
 
 # call the method to fill in the table
-engine.fill_table("table_name", schema, 100)       # give it tablename, schema of table and no of rows.
+# 101 rows as id can take values from 0 to 100 = 101
+engine.fill_table("table_name", schema, 101)       # give it tablename, schema of table and no of rows.
 
 # print the table if you want
 engine.print_table("table_name")
@@ -35,3 +38,43 @@ engine.clear_table("table_name")
 
 # Thats IT :)
 ```
+
+
+# Schema Functions to specify datatypes
+`Int` - means "INT" of SQL.
+`Char` - means "CHAR" of SQL.
+`VarChar` - means "VARCHAR" of SQL. # does not take size like in SQL.
+`Date` - means DATE of sql.
+`DateTime`
+`Time`
+`Timestamp`
+
+
+# Hooks
+### Int
+`random_int` : generates random integers
+`random_digits` : generates random 0-9 digit.
+`seq_choice` : generates sequenctial numbers from the range given using `args`.
+```python
+schema = {
+  'id':Int('id', hook='seq_choice', args=[50,100])
+}
+```
+
+### VarChar/Char
+'name' : generates full names
+'first_name' : generates first names
+'last_name' : generates last names
+'address' : generates fake addresses
+'male_name' : generates male names
+'female_name' : generates female names
+'job': generates a job name
+'phone_number' : generates phone numbers
+
+### Date/DateTime/Time/Timestamp
+'future_datetime' : generates a future datetime
+'past_datetime' : generates a past datetime
+'future_date': generates a future date
+'past_date' : generates a past date
+'time' : generates time value HH:MM:SS
+'date': generates date value
