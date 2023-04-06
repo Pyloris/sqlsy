@@ -1,5 +1,5 @@
 # sqlsy
-![badge1](https://img.shields.io/static/v1?label=python%3&message=SQL&color=blue)
+![badge1](https://img.shields.io/static/v1?label=python%203&message=SQL&color=blue)
 ![badge2](https://img.shields.io/static/v1?label=easy&message=install&color=green)
 
 A simple Python Module to easy fill your sql tables with data.
@@ -26,7 +26,7 @@ config = {
 
 # hook specifies what data to generate
 schema = {
-  'id':Int(hook='sequence', args=[0,100]),     # generates numbers 0 - 100 inclu
+  'id':Int(hook='sequence', args=[0,30]),     # generates numbers 0 - 30 including 30
   'name':VarChar(hook='name'),        # here generate fake names
   'job':VarChar(hook='job')           # here generate fake jobs
 }
@@ -39,11 +39,11 @@ engine = Engine(config)
 engine.create_db('employee')
 
 # create the table with above schema
-engine.create_table('person')
+engine.create_table('person', schema)
 
 # call the method to fill in the table
-# 101 rows as id can take values from 0 to 100 = 101
-engine.fill_table("person", schema, 101)       # give it tablename, schema of table and no of rows.
+# 101 rows as id can take values from 0 to 30 = 31
+engine.fill_table("person", schema, 31)       # give it tablename, schema of table and no of rows.
 
 # print the table if you want
 engine.print_table("table_name")
@@ -54,6 +54,8 @@ engine.clear_table("table_name")
 # drop the database if you want to
 engine.drop_db("employee")
 ```
+
+![image](https://user-images.githubusercontent.com/76217003/230254219-aafe049f-93cd-45ff-ab97-22d960785add.png)
 
 
 # Schema Functions to specify datatypes
