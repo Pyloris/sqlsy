@@ -1,5 +1,5 @@
 # sqlsy
-![badge1](https://img.shields.io/static/v1?label=first%20badge&message=SQL&color=blue
+![badge1](https://img.shields.io/static/v1?label=first%20badge&message=SQL&color=blue)
 A simple Python Module to easy fill your sql tables with data.
 
 ## Install
