@@ -4,9 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sqlsy"
-version = "0.0.1"
+version = "0.0.2"
 description = "Fill your database Quickly with dummy data"
-long_description = "To use just import the `sqlsy` in your script."
 readme = "README.md"
 authors = [{ name="shoaib wani", email="shoaibwani010@gmail.com"}]
 license = {file = "LICENSE"}
@@ -14,8 +13,9 @@ keywords = ["sql", "sql dummy data", "fake data"]
 requires-python = ">=3.9"
 classifiers = [
 	"License :: OSI Approved :: MIT License",
-	"Programming Language :: Python",
-	"Programming Language :: Python :: 3"
+	"Operating System :: OS Independent",
+	"Programming Language :: Python :: 3.11",
+	"Topic :: Database"
 ]
 dependencies = [
 	"mysql-connector-python",

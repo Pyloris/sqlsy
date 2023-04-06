@@ -4,7 +4,7 @@
 # to specific faker module functions.
 #####
 
-from .custom_callbacks import random_choice, seq_choice
+from .custom_callbacks import random_choice, sequential_choice, sequence
 from faker import Faker
 
 
@@ -20,6 +20,11 @@ varchar = {
 	'female_name':fake.name_female,
 	'job':fake.job,
 	'phone_number':fake.phone_number,
+	'email':fake.email,
+	'md5':fake.md5,
+	'sha1':fake.sha1,
+	'uuid':fake.uuid4,
+	'date_of_birth':fake.date_of_birth
 }
 
 date_time = {
@@ -36,13 +41,14 @@ date_time = {
 # generate pure random numbers for entropy
 numbers = {
 	'random_int':fake.random_int,
-	'random_digit':fake.random_int
+	'random_digit':fake.random_int,
+	'sequence':sequence()
 }
 
 
 custom = {
 	'random_choice':random_choice,
-	'seq_choice':seq_choice
+	'sequential_choice':sequential_choice()
 }
 
 

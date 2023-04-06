@@ -9,33 +9,105 @@ from termcolor import cprint, colored
 from rich.progress import track
 from rich.console import Console
 from rich.table import Table
+from sys import exit
 
 
 class Engine:
+
+	# current column being filled
+	current_col = ""
 
 	def __init__(self, config: dir):
 		self.config = config
 		self.conn = self.connect_db()
 
+		# cursor
+		self.cursor = self.conn.cursor()
 		
+
 	# connect to the database
 	def connect_db(self):
 		try:
 			conn = mysql.connector.connect(**self.config)
 			cprint("[+] Connection Success ", "green")
 			return conn
-		except Exception:
-			cprint("[x] ERROR :: Couldn't connect to mysql server!", "red")
-			exit(0)
+		except mysql.connector.Error as err:
+			cprint("[x] Error : {}".format(err), "red")
+			exit(1)
 
 
 	# fetch data
 	def fetch(self, query):
-		cursor = self.conn.cursor()
-
-		cursor.execute(query)
-
+		self.cursor.execute(query)
 		return cursor.fetchall()
+
+
+	# Create a database
+	def create_db(self, db_name:str):
+
+		try:
+			cprint(f"[+] Creating Database {db_name}..", "blue")
+			self.cursor.execute(f"create database {db_name};")
+			self.conn.commit()
+
+			cprint(f"[+] Database created", "green")
+			self.cursor.execute("use {}".format(db_name))
+			cprint(f"[+] Now using this database..", 'blue')
+		except (mysql.connector.Error, Exception) as err:
+			cprint("[x] Error: {}".format(err), "red")
+			exit(1)
+
+
+
+	# create tables to fill later
+	def create_table(self, tb_name:str, schema:dir):
+		try:
+			query = "create table {} (".format(tb_name)
+
+			for col in schema.keys():
+				# check if constraints are given
+				constraint = schema[col]['constraints']
+
+				# if not, give a null str as constraint
+				if not constraint:
+					constraint = [""]
+
+				# generate the table attribute
+				attribute = " {} {} ".format(col, schema[col]['type'])+" ".join(constraint)+","
+				query+=attribute
+
+			# remove the last ',' from the query
+			query = query[:-1]+");"
+
+			# create the table
+			self.cursor.execute(query)
+
+			cprint(f"[+] Table {query.split()[2]} created", 'blue')
+			self.conn.commit()
+		except mysql.connector.Error as err:
+			cprint("[x] Error: {}".format(err), 'red')
+			exit(1)
+
+
+	# drop the database
+	def drop_db(self, db_name):
+		try:
+			self.cursor.execute("drop database {}".format(db_name))
+			self.conn.commit()
+			cprint("[+] Dropped {} database".format(db_name), 'blue')
+		except mysql.connector.Error as err:
+			cprint("[x] Error : {}".format(err))
+			exit(1)
+
+	# drop the table
+	def drop_table(self, tb_name):
+		try:
+			self.cursor.execute("drop table {}".format(tb_name))
+			self.conn.commit()
+			cprint("[+] Dropped Table {}".format(tb_name), 'blue')
+		except mysql.connector.Error as err:
+			cprint("[+] Error : {}".format(err))
+			exit(1)
 
 
 	# Method to parse the schema and generate insert query
@@ -44,19 +116,18 @@ class Engine:
 		vals = ""
 
 		query_holders = []
-		self.cols = []
+		# store for printing the table
+		self.cols = schema.keys()
 
 		for data in schema.values():
-			# store for printing table
-			self.cols.append(data['attr'])
 
 			if data['type'] == 'int':
 				query_holders.append("%d")
 			else:
-				query_holders.append("'%s'")
+				query_holders.append('"%s"')
 
 		# build the query
-		vals += "("+','.join(query_holders)+");"
+		vals += "("+",".join(query_holders)+");"
 
 		# final query
 		query = f"INSERT INTO {tb_name} "+cols+" values "+vals
@@ -64,10 +135,19 @@ class Engine:
 		return query
 
 	
+	# set current_col state
+	@classmethod
+	def set_col(cls, col):
+		cls.current_col = col
+
+	# get current col
+	@classmethod
+	def get_col(cls):
+		return cls.current_col
+
+
 	# method to fill the table
 	def fill_table(self, table_name:str, schema:dict, n: int):
-		# get cursor
-		cursor = self.conn.cursor()
 
 		# parse the scheme and get the query
 		query = self.parse_schema(schema, table_name)
@@ -78,7 +158,8 @@ class Engine:
 		for i in track(range(n), description=colored(f"[+] Working on {table_name}: ", 'blue')):
 			data.clear()
 
-			for attr in schema.values():
+			for col,attr in zip(schema.keys(),schema.values()):
+				self.set_col(col)
 				if attr['args'] == None:
 					data.append(attr['callback']())
 				else:
@@ -87,23 +168,23 @@ class Engine:
 
 			try:
 				# add the data
-				cursor.execute(query % tuple(data))
+				self.cursor.execute(query % tuple(data))
 
 				# commit the data
 				self.conn.commit()
-			except Exception:
-				cprint("[x] Data couldn't be added to the table", "red")
-				return 0
+			except mysql.connector.Error as err:
+				cprint("[x] Error : {}".format(err), "red")
+				exit(1)
+
 
 
 
 	# delete everything from the database
 	def clear_table(self, table_name):
-		cursor = self.conn.cursor()
 
 		cprint("[+] Clearing the table ...", 'blue')
 
-		cursor.execute(f"delete from {table_name};")
+		self.cursor.execute(f"delete from {table_name};")
 		self.conn.commit()
 
 
@@ -134,5 +215,5 @@ class Engine:
 		try:
 			self.conn.close()
 			cprint("[+] Closed the connection to mysql", "green")
-		except Exception:	
-			cprint("[x] Couldn't Close the connection to mysql", "red")
+		except mysql.connector.Error as err:	
+			cprint("[x] Couldn't close connection : {}".format(err), "red")

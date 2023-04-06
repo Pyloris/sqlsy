@@ -7,16 +7,15 @@ from termcolor import cprint
 from .mapping import mapping
 
 
-# decorator for Sql datatype
+#  Sql datatypes
 def datatype(func):
-	def sql_dtype(attribute, *, hook=None, custom_func=None, args:list = None, this=None):
+	def sql_dtype(*, hook=None, custom_func=None, args:list = None, constraints:list=None):
 
 		mini_scheme = {}
 
-		mini_scheme['attr'] = attribute
-
 		# store the args
 		mini_scheme['args'] = args
+		mini_scheme['constraints'] = constraints
 
 		# check for data generator
 		if not hook and not custom_func:
@@ -31,50 +30,49 @@ def datatype(func):
 
 
 		# call datatype specific function to return scheme
-		return func(attribute, hook=hook, custom_func=custom_func, args=args, this=mini_scheme)
+		return func(hook=hook, custom_func=custom_func, args=args, this=mini_scheme)
 
 	return sql_dtype
 
 
 @datatype
-def Int(attribute, *, hook=None, custom_func=None, args:list=None, this=None):
+def Int(*, hook=None, custom_func=None, args:list=None, this=None):
 	# used in dynamic query building
 	this['type'] = 'int'
 	return this
 
 
-
 @datatype
-def Char(attribute, *, hook=None, custom_func=None, args:list=None, this=None):
-	this['type'] = 'char'
+def Char(*, hook=None, custom_func=None, args:list=None, this=None):
+	this['type'] = 'char(255)'
 	return this
 
 
 @datatype
-def VarChar(attribute, *, hook=None, custom_func=None, args:list = None, this=None):
-	this['type'] = 'varchar'
+def VarChar(*, hook=None, custom_func=None, args:list = None, this=None):
+	this['type'] = 'varchar(255)'
 	return this
 
 
 @datatype
-def Date(attribute, *, hook=None, custom_func=None, args:list = None, this=None):
+def Date(*, hook=None, custom_func=None, args:list = None, this=None):
 	this['type'] = 'date'
 	return this
 
 
 @datatype
-def Time(attribute, *, hook=None, custom_func=None, args:list = None, this=None):
+def Time(*, hook=None, custom_func=None, args:list = None, this=None):
 	this['type'] = 'time'
 	return this
 
 
 @datatype
-def DateTime(attribute, *, hook=None, custom_func=None, args:list = None, this=None):
+def DateTime(*, hook=None, custom_func=None, args:list = None, this=None):
 	this['type'] = 'datetime'
 	return this
 
 
 @datatype
-def Timestamp(attribute, *, hook=None, custom_func=None, args:list = None, this=None):
+def Timestamp(*, hook=None, custom_func=None, args:list = None, this=None):
 	this['type'] = 'timestamp'
 	return this
