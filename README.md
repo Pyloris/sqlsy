@@ -1,5 +1,10 @@
 # sqlsy
-### Install
+![badge1](https://img.shields.io/static/v1?label=python%203&message=SQL&color=blue)
+![badge2](https://img.shields.io/static/v1?label=easy&message=install&color=green)
+
+A simple Python Module to easy fill your sql tables with data.
+
+## Install
 ```bash
 pip install sqlsy
 ```
@@ -14,26 +19,31 @@ from sqlsy.utils.schema import Int, VarChar      # sql datatypes to define schem
 config = {
   'user':'username',
   'password':'pas@word',
-  'host':'localhost',
-  'database':'db_name'
+  'host':'localhost'
 }
 
 # define the schema of the table to fill
 
 # hook specifies what data to generate
 schema = {
-  'id':Int('id', hook='seq_choice', args=[0,100]),     # generates numbers 0 - 100 inclu
-  'name':VarChar('name', hook='name'),        # here generate fake names
-  'job':VarChar('job', hook='job')           # here generate fake jobs
+  'id':Int(hook='sequence', args=[0,30]),     # generates numbers 0 - 30 including 30
+  'name':VarChar(hook='name'),        # here generate fake names
+  'job':VarChar(hook='job')           # here generate fake jobs
 }
 
 
 # create engine instance
 engine = Engine(config)
 
+# create a database to store above table, if not already created
+engine.create_db('employee')
+
+# create the table with above schema
+engine.create_table('person', schema)
+
 # call the method to fill in the table
-# 101 rows as id can take values from 0 to 100 = 101
-engine.fill_table("table_name", schema, 101)       # give it tablename, schema of table and no of rows.
+# 101 rows as id can take values from 0 to 30 = 31
+engine.fill_table("person", schema, 31)       # give it tablename, schema of table and no of rows.
 
 # print the table if you want
 engine.print_table("table_name")
@@ -41,16 +51,19 @@ engine.print_table("table_name")
 # delete all the data added to the table
 engine.clear_table("table_name")
 
-# Thats IT :)
+# drop the database if you want to
+engine.drop_db("employee")
 ```
+
+![image](https://user-images.githubusercontent.com/76217003/230254219-aafe049f-93cd-45ff-ab97-22d960785add.png)
 
 
 # Schema Functions to specify datatypes
 `Int` - means "INT" of SQL.
 
-`Char` - means "CHAR" of SQL.
+`Char` - means "CHAR" of SQL. By default of size 255.
 
-`VarChar` - means "VARCHAR" of SQL. # does not take size like in SQL.
+`VarChar` - means "VARCHAR" of SQL. By default of size 255 # does not take size like in SQL.
 
 `Date` - means DATE of sql, `DateTime`, `Time` and `Timestamp`
 
@@ -61,11 +74,18 @@ engine.clear_table("table_name")
 
 `random_digits` : generates random 0-9 digit.
 
-`seq_choice` : generates sequenctial numbers from the range given using `args`.
+`sequential_choice` : generates sequenctial numbers from the range given using `args`.
 
 ```python
 schema = {
-  'id':Int('id', hook='seq_choice', args=[50,100])
+  'id':Int(hook='sequential_choice', args=[50,100])
+}
+```
+
+`random_choice` : Randomly chooses values from a given list
+```python
+schema = {
+  'stream':VarChar(hook='random_choice', args=[['bca', 'btech', 'commerce', 'mtech']])
 }
 ```
 
@@ -73,6 +93,8 @@ schema = {
 `name` : generates full names
 
 `first_name` : generates first names
+
+`email` : generates emails
 
 `last_name` : generates last names
 
@@ -101,12 +123,4 @@ schema = {
 
 `date`: generates date value
 
-
-### Choose randomly from a list
-For example if we want to choose values from a provided list at random we can use the hook `random_choice`.
-```python
-schema = {
-  'stream':VarChar('stream', hook='random_choice', args=[['Science', 'BCA', 'BTech']])
-}
-# stream will contain values from the given list in `args` at random.
-```
+`date_of_birth` : generates dob's in YYYY-MM-DD format
