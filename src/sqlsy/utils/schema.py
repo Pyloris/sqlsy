@@ -43,6 +43,13 @@ def Int(*, hook=None, custom_func=None, args:list=None, this=None):
 
 
 @datatype
+def Float(*, hook=None, custom_func=None, args:list=None, this=None):
+	# store the float type
+	this['type'] = 'float'
+	return this
+
+
+@datatype
 def Char(*, hook=None, custom_func=None, args:list=None, this=None):
 	this['type'] = 'char(255)'
 	return this

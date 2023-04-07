@@ -123,6 +123,8 @@ class Engine:
 
 			if data['type'] == 'int':
 				query_holders.append("%d")
+			elif data['type'] == 'float':
+				query_holders.append("%f")
 			else:
 				query_holders.append('"%s"')
 

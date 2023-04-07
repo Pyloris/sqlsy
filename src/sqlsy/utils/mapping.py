@@ -4,7 +4,7 @@
 # to specific faker module functions.
 #####
 
-from .custom_callbacks import random_choice, sequential_choice, sequence
+from .custom_callbacks import random_choice, sequential_choice, sequence, random_float
 from faker import Faker
 
 
@@ -42,6 +42,7 @@ date_time = {
 numbers = {
 	'random_int':fake.random_int,
 	'random_digit':fake.random_int,
+	'random_float':random_float,
 	'sequence':sequence()
 }
 

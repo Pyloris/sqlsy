@@ -1,5 +1,5 @@
-def main():
-	print("[+] Import inside of your script to use!")
+def welcome():
+	print("..) Thankyou for using Sqlsy!")
 
 if __name__ == '__main__':
-	main()
+	welcome()
