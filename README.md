@@ -61,6 +61,8 @@ engine.drop_db("employee")
 # Schema Functions to specify datatypes
 `Int` - means "INT" of SQL.
 
+`Float` - means "Float" of SQL. Doesnt support size and pricision as recommended by the Mysql docs.
+
 `Char` - means "CHAR" of SQL. By default of size 255.
 
 `VarChar` - means "VARCHAR" of SQL. By default of size 255 # does not take size like in SQL.
@@ -74,11 +76,19 @@ engine.drop_db("employee")
 
 `random_digits` : generates random 0-9 digit.
 
-`sequential_choice` : generates sequenctial numbers from the range given using `args`.
+`random_float` : generates random float value in the range given in args.
 
 ```python
 schema = {
-  'id':Int(hook='sequential_choice', args=[50,100])
+  'id':Int(hook='random_float', args=[50,200])
+}
+```
+
+`sequence` : generates sequenctial numbers from the range given using `args`.
+
+```python
+schema = {
+  'id':Int(hook='sequence', args=[50,100])
 }
 ```
 
