@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sqlsy"
-version = "0.0.2"
+version = "0.0.4"
 description = "Fill your database Quickly with dummy data"
 readme = "README.md"
 authors = [{ name="shoaib wani", email="shoaibwani010@gmail.com"}]
@@ -21,11 +21,12 @@ dependencies = [
 	"mysql-connector-python",
 	"faker",
 	"rich",
-	"termcolor"
+	"termcolor",
+	"numpy"
 ]
 
 [project.urls]
 Homepage = "https://github.com/pyloris/sqlsy"
 
 [project.scripts]
-sqlsy = "sqlsy.__main__:main"
+sqlsy = "sqlsy.__main__:welcome"
