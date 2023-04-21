@@ -71,7 +71,7 @@ engine.drop_db("employee")
 
 
 # Hooks
-### Int
+### Int/Float
 `random_int` : generates random integers
 
 `random_digits` : generates random 0-9 digit.
@@ -80,7 +80,7 @@ engine.drop_db("employee")
 
 ```python
 schema = {
-  'id':Int(hook='random_float', args=[50,200])
+  'id':Float(hook='random_float', args=[50,200])
 }
 ```
 
