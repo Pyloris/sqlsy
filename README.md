@@ -118,7 +118,7 @@ tb_name = {
 }
 ```
 
-`random_digits` : generates random 0-9 digit.
+`random_digit` : generates random 0-9 digit.
 
 `random_float` : generates random float value in the range given in args.
 
@@ -161,6 +161,12 @@ schema = {
 `job`: generates a job name
 
 `phone_number` : generates phone numbers
+
+`md5` : Generates fake md5 hashes
+
+`sha1` : Generates sha1 hashes
+
+`uuid` : Generates UUID's
 
 
 ### Hooks for Date/DateTime/Time/Timestamp type data

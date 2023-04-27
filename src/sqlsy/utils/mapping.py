@@ -23,8 +23,7 @@ varchar = {
 	'email':fake.email,
 	'md5':fake.md5,
 	'sha1':fake.sha1,
-	'uuid':fake.uuid4,
-	'date_of_birth':fake.date_of_birth
+	'uuid':fake.uuid4
 }
 
 date_time = {
@@ -34,7 +33,8 @@ date_time = {
 	'past_date':fake.past_date,
 	'time':fake.time,
 	'date':fake.date,
-	'unix_time':fake.unix_time
+	'unix_time':fake.unix_time,
+	'date_of_birth':fake.date_of_birth
 }
 
 
@@ -48,8 +48,7 @@ numbers = {
 
 
 custom = {
-	'random_choice':random_choice,
-	'sequential_choice':sequential_choice()
+	'random_choice':random_choice
 }
 
 
