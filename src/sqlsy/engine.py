@@ -37,9 +37,10 @@ class Engine:
 
 
 	# fetch data
-	def fetch(self, query):
+	def fetch(self, tb_name: str, cols:list):
+		query = f'select {",".join(cols)} from {tb_name}'
 		self.cursor.execute(query)
-		return cursor.fetchall()
+		return self.cursor.fetchall()
 
 
 	# Create a database
@@ -177,7 +178,10 @@ class Engine:
 			except mysql.connector.Error as err:
 				cprint("[x] Error : {}".format(err), "red")
 				exit(1)
-
+			except Exception as err:
+				self.clear_table(table_name)
+				cprint("[x] Error: {}".format(err), 'red')
+				exit(1)
 
 
 
