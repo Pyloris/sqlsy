@@ -1,2 +1,4 @@
 src/sqlsy.egginfo*
 src/sqlsy/__pycache__/*
+dist/*
+

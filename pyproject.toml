@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sqlsy"
-version = "0.0.4"
+version = "1.0.0"
 description = "Fill your database Quickly with dummy data"
 readme = "README.md"
 authors = [{ name="shoaib wani", email="shoaibwani010@gmail.com"}]

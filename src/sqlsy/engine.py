@@ -20,8 +20,6 @@ class Engine:
 	def __init__(self, config: dir):
 		self.config = config
 		self.conn = self.connect_db()
-
-		# cursor
 		self.cursor = self.conn.cursor()
 		
 
@@ -93,7 +91,7 @@ class Engine:
 	# drop the database
 	def drop_db(self, db_name):
 		try:
-			self.cursor.execute("drop database {}".format(db_name))
+			self.cursor.execute("drop database if exists {}".format(db_name))
 			self.conn.commit()
 			cprint("[+] Dropped {} database".format(db_name), 'blue')
 		except mysql.connector.Error as err:
@@ -103,7 +101,7 @@ class Engine:
 	# drop the table
 	def drop_table(self, tb_name):
 		try:
-			self.cursor.execute("drop table {}".format(tb_name))
+			self.cursor.execute("drop table if exists {}".format(tb_name))
 			self.conn.commit()
 			cprint("[+] Dropped Table {}".format(tb_name), 'blue')
 		except mysql.connector.Error as err:
@@ -160,15 +158,20 @@ class Engine:
 
 		for i in track(range(n), description=colored(f"[+] Working on {table_name}: ", 'blue')):
 			data.clear()
-
-			for col,attr in zip(schema.keys(),schema.values()):
-				self.set_col(col)
-				if attr['args'] == None:
-					data.append(attr['callback']())
-				else:
-					# pass the arguments in
-					data.append(attr['callback'](*attr['args']))
-
+			try:
+				for col,attr in zip(schema.keys(),schema.values()):
+					self.set_col(col)
+					if 'custom_flag' in attr.keys():
+						data.append(next(attr['callback']))
+					elif attr['args'] == None:
+						data.append(attr['callback']())
+					else:
+						# pass the arguments in
+						data.append(attr['callback'](*attr['args']))
+			except StopIteration:
+				cprint("[x] The custom function generated less data then target rows!", "red")
+				self.clear_table(table_name)
+				exit(0)
 			try:
 				# add the data
 				self.cursor.execute(query % tuple(data))
@@ -216,10 +219,18 @@ class Engine:
 		# print the table
 		console.print(table)
 
+	def close(self):
+		try:
+			self.conn.close()
+			cprint("[+] Closed the Connection to database", "green")
+		except mysql.connector.Error as err:
+			cprint('[x] Couldnt close the connection : {}'.format(err), "red")
+
 
 	def __del__(self):
 		try:
-			self.conn.close()
-			cprint("[+] Closed the connection to mysql", "green")
+			if self.conn.is_connected():
+				self.conn.close()
+				cprint("[+] Closed the connection to mysql", "green")
 		except mysql.connector.Error as err:	
 			cprint("[x] Couldn't close connection : {}".format(err), "red")

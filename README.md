@@ -1,4 +1,6 @@
 # sqlsy
+![badge4](https://img.shields.io/badge/MIT-License-red)
+![badge3](https://img.shields.io/badge/version-v1.0.0-magenta)
 ![badge1](https://img.shields.io/static/v1?label=python%203&message=SQL&color=blue)
 ![badge2](https://img.shields.io/static/v1?label=easy&message=install&color=green)
 
@@ -9,7 +11,8 @@ A simple Python Module to easy fill your sql tables with data.
 pip install sqlsy
 ```
 
-A python module to easy filling in dummy data insde mysql databases.
+## Quick Usage
+A simple script to fill in data inside of a mysql table
 
 ```python
 from sqlsy import Engine
@@ -19,28 +22,30 @@ from sqlsy import Int, VarChar      # sql datatypes to define schema
 config = {
   'user':'username',
   'password':'pas@word',
-  'host':'localhost'
+  'host':'localhost',
+  'database':'dbName'   # database to use: optional as it can be selected using a method
 }
 
-# define the schema of the table to fill
+# custom function should be a generator
+def get_id(n1, n2):
+  i = n1
+  while i < n2:
+    yield i
+    i += 1
 
+# define the schema of the table to fill
 # hook specifies what data to generate
 schema = {
-  'id':Int(hook='sequence', args=[0,30]),     # generates numbers 0 - 30 including 30
+  'id':Int(custom_func=get_id(0,30)),     # generates numbers 0 - 30 including 30
   'name':VarChar(hook='name'),        # here generate fake names
-  'job':VarChar(hook='job')           # here generate fake jobs
+  'ph_number':VarChar(hook='phone_number')           # here generate fake jobs
 }
 
 
 # create engine instance
 engine = Engine(config)
 
-# create a database to store above table, if not already created
-engine.create_db('employee')
-
-# create the table with above schema
-engine.create_table('person', schema)
-
+# ASSUMING that the table is already created
 # call the method to fill in the table
 # 101 rows as id can take values from 0 to 30 = 31
 engine.fill_table("person", schema, 31)       # give it tablename, schema of table and no of rows.
@@ -48,34 +53,68 @@ engine.fill_table("person", schema, 31)       # give it tablename, schema of tab
 # print the table if you want
 engine.print_table("table_name")
 
-# delete all the data added to the table
-engine.clear_table("table_name")
-
-# drop the database if you want to
-engine.drop_db("employee")
+# close the connection
+engine.close()
 ```
 
-![image](https://user-images.githubusercontent.com/76217003/230254219-aafe049f-93cd-45ff-ab97-22d960785add.png)
+## API provided by Engine Class
+The API include following methods and attributes:
+Let the `engine` be an instance of `Engine` class
+```python
+engine = Engine(config)
+```
+### Attributes
+- `engine.config` : Stores the provided config for mysql api connection
+- `engine.conn` : It is what stores the connection object after connection is opened.
+- `engine.cursor` : It stores the cursor to execute queries on the database.
 
+## Methods
+- `engine.fetch(table_name, [col_name1, col_name2])` : Grab the data from the specified columns directly
+
+- `engine.create_db(database_name)` : Creates a database with name as provided in argument.
+
+- `engine.create_table(table_name, schema)` : Creates a table with the specified Schema.
+
+- `engine.drop_db(db_name)` : Drops the database if it exists
+
+- `engine.drop_table(tb_name)` : Drops the table if it exists
+
+- `engine.fill_table(tb_name, tb_schema, n_rows)` : Fills the table with tb_name as name and tb_schema as schema with n_rows of data. Make sure the provided hooks or custom_functions generate equal to or more than n_rows of data.
+
+- `engine.print_table(tb_name)` : It prints the table in pretty format for you to see.
+
+- `engine.clear_table(tb_name)` : It removes all the data from the table with provided table name
+
+- `engine.close()` : It closes the connection to the database. If not called, the connection will be closed when `engine` object is destroyed.
 
 # Schema Functions to specify datatypes
-`Int` - means "INT" of SQL.
 
-`Float` - means "Float" of SQL. Doesnt support size and pricision as recommended by the Mysql docs.
+### How to Describe Schema
+> Schema can be describe by using the provided functions which are documented below:
 
-`Char` - means "CHAR" of SQL. By default of size 255.
+1. `Int` - means "INT" of SQL.
 
-`VarChar` - means "VARCHAR" of SQL. By default of size 255 # does not take size like in SQL.
+2. `Float` - means "Float" of SQL. Doesnt support size and pricision as recommended by the Mysql docs.
 
-`Date` - means DATE of sql, `DateTime`, `Time` and `Timestamp`
+3. `Char` - means "CHAR" of SQL. By default of size 255.
+
+4. `VarChar` - means "VARCHAR" of SQL. By default of size 255 # does not take size like in SQL.
+
+### Equivalent to SQL counterparts
+`Date`, `DateTime`, `Time`, `Timestamp`
+
+# How Data is Generated
+This module is designed such that the below provided hooks actually are mapped to functions which are responsible for data generation.
+
+Below are the Hooks which can be used to generate data automatically, also Custom Generator functions can be provided which will then be called to generate data.
 
 
-# Hooks
-### Int/Float
+### Hooks for Int / Float type data
 `random_int` : generates random integers - provide range with arguments
 ```python
+# schema description
 tb_name = {
-  'age':Int(hook='random_int', args=[10,50])
+  'age':Int(hook='random_int', args=(10,50))
 }
 ```
 
@@ -85,7 +124,7 @@ tb_name = {
 
 ```python
 schema = {
-  'id':Float(hook='random_float', args=[50,200])
+  'id':Float(hook='random_float', args=(50,200))
 }
 ```
 
@@ -93,18 +132,18 @@ schema = {
 
 ```python
 schema = {
-  'id':Int(hook='sequence', args=[50,100])
+  'id':Int(hook='sequence', args=(50,100))
 }
 ```
 
 `random_choice` : Randomly chooses values from a given list
 ```python
 schema = {
-  'stream':VarChar(hook='random_choice', args=[['bca', 'btech', 'commerce', 'mtech']])
+  'stream':VarChar(hook='random_choice', args=(['bca', 'btech', 'commerce', 'mtech']))
 }
 ```
 
-### VarChar/Char
+### Hooks for VarChar / Char type data
 `name` : generates full names
 
 `first_name` : generates first names
@@ -124,7 +163,7 @@ schema = {
 `phone_number` : generates phone numbers
 
 
-### Date/DateTime/Time/Timestamp
+### Hooks for Date/DateTime/Time/Timestamp type data
 
 `future_datetime` : generates a future datetime
 
