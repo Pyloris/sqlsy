@@ -12,8 +12,8 @@ pip install sqlsy
 A python module to easy filling in dummy data insde mysql databases.
 
 ```python
-from sqlsy.engine import Engine
-from sqlsy.utils.schema import Int, VarChar      # sql datatypes to define schema
+from sqlsy import Engine
+from sqlsy import Int, VarChar      # sql datatypes to define schema
 
 # config for mysql connection : uses mysql api inside
 config = {
@@ -72,7 +72,12 @@ engine.drop_db("employee")
 
 # Hooks
 ### Int/Float
-`random_int` : generates random integers
+`random_int` : generates random integers - provide range with arguments
+```python
+tb_name = {
+  'age':Int(hook='random_int', args=[10,50])
+}
+```
 
 `random_digits` : generates random 0-9 digit.
 
