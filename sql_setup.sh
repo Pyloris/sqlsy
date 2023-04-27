@@ -25,7 +25,7 @@ function prBlue() {
 prGreen '[+] Installing Mariadb-Client & Mariadb-Server\n'
 
 # installing mariadb client&server
-sudo apt instal mariadb-client mariadb-server > /dev/null 2>&1
+sudo apt install mariadb-client mariadb-server > /dev/null 2>&1
 
 if [[ $? -eq 0 ]]
 then
